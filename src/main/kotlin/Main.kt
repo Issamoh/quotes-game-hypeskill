@@ -10,8 +10,7 @@ fun getDataFrom(inputUrl: String) : String{
         .build()
 
     client.newCall(request).execute().use { response ->
-        val jsonString = response.body!!.string()
-        return jsonString
+        return response.body!!.string()
     }
 }
 
