@@ -26,6 +26,7 @@ data class Author(val id: Int, val name: String, val birthdate: String, val hint
 
 
 fun main() {
+    var score = 0
     val url = "https://quotes-hyperskill.vercel.app/api/quotes/random"
     val quoteJson = getDataFrom(url)
     val quoteData = Json.decodeFromString<Quote>(quoteJson)
@@ -57,17 +58,46 @@ fun main() {
        authorsNames.add(randomAuthorData.name)
     }
 
+    val authorsNamesShuffled = authorsNames.shuffled()
     println(quoteData.text)
     var index = 1
-    for (name in authorsNames.shuffled()) {
+    for (name in authorsNamesShuffled) {
         println("$index. $name")
         index++
     }
 
-    print("Guess the author by entering its associated number: ")
-    val guess = readln().toInt()
-    if (authorsNames[guess-1] == authorData.name) println("Correct! Well done!")
-    else println("Almost there! Give it another shot!")
 
+    var attempts = 0
+    while (attempts < 3) {
+        print("Guess the author by entering its associated number: ")
+        val guess = readln().toInt()
+        if (authorsNamesShuffled[guess - 1] == authorData.name) {
+            println("Correct! Well done!")
+            println("The correct author is ${authorData.name}. ${authorData.name.split(" ")[0]} is ${authorData.bio}")
+            score++
+            break
+        } else {
+            giveHint(attempts, authorData)
+        }
+        attempts++
+    }
 
+}
+
+fun giveHint(attempts: Int, author: Author){
+    when(attempts) {
+        0 -> {
+            println("Almost there! Give it another shot!")
+            println("Here's a hint, the author is born on ${author.birthdate}")
+        }
+        1 -> {
+            println("Almost there! Give it another shot!")
+            println("Here's another hint, the author is ${author.hint}")
+        }
+        2 -> {
+            println("You've run out of hints!")
+            println("The correct author is ${author.name}. ${author.name.split(" ")[0]} is ${author.bio}")
+            println("Nice effort! Don't worry. You'll get the next one!")
+        }
+    }
 }
